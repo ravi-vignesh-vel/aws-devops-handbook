@@ -1,0 +1,552 @@
+# VS Code Productivity Guide for DevOps Engineers (Beginner to Professional)
+
+## 1. Why Learn VS Code Shortcuts?
+
+As a DevOps Engineer, you will spend most of your time working with:
+
+* YAML files (Kubernetes, GitHub Actions, Azure DevOps)
+* Terraform files
+* Shell Scripts
+* Dockerfiles
+* Python scripts
+* Configuration files
+* Logs and troubleshooting
+
+Using shortcuts can save 1-2 hours every day.
+
+---
+
+# 2. Most Important Shortcuts (Learn First)
+
+## File Navigation
+
+| Action             | Windows/Linux    | Mac             |
+| ------------------ | ---------------- | --------------- |
+| Quick Open File    | Ctrl + P         | Cmd + P         |
+| New File           | Ctrl + N         | Cmd + N         |
+| Save File          | Ctrl + S         | Cmd + S         |
+| Close File         | Ctrl + W         | Cmd + W         |
+| Reopen Closed File | Ctrl + Shift + T | Cmd + Shift + T |
+
+### Example
+
+Instead of manually opening:
+
+```text
+terraform/main.tf
+```
+
+Press:
+
+```text
+Ctrl + P
+```
+
+Type:
+
+```text
+main.tf
+```
+
+Press Enter.
+
+---
+
+# 3. Search Like a Pro
+
+## Search in Current File
+
+```text
+Ctrl + F
+```
+
+## Replace in Current File
+
+```text
+Ctrl + H
+```
+
+## Search Entire Project
+
+```text
+Ctrl + Shift + F
+```
+
+## Replace Entire Project
+
+```text
+Ctrl + Shift + H
+```
+
+### Real DevOps Example
+
+Need to replace:
+
+```yaml
+image: nginx:1.23
+```
+
+with
+
+```yaml
+image: nginx:1.24
+```
+
+across 50 Kubernetes files.
+
+Use:
+
+```text
+Ctrl + Shift + H
+```
+
+instead of editing one by one.
+
+---
+
+# 4. Multi-Cursor Editing (Super Productivity Booster)
+
+## Add Multiple Cursors
+
+```text
+Alt + Click
+```
+
+## Select Next Matching Word
+
+```text
+Ctrl + D
+```
+
+## Select All Matching Words
+
+```text
+Ctrl + Shift + L
+```
+
+### Example
+
+Change:
+
+```yaml
+replicas: 2
+```
+
+to
+
+```yaml
+replicas: 3
+```
+
+in multiple places simultaneously.
+
+---
+
+# 5. Line Manipulation
+
+## Copy Line
+
+```text
+Shift + Alt + Down
+```
+
+## Move Line Up
+
+```text
+Alt + Up
+```
+
+## Move Line Down
+
+```text
+Alt + Down
+```
+
+## Delete Line
+
+```text
+Ctrl + Shift + K
+```
+
+### Useful for
+
+* Kubernetes YAML
+* Terraform resources
+* Docker Compose services
+
+---
+
+# 6. Commenting Code
+
+## Single Line Comment
+
+```text
+Ctrl + /
+```
+
+## Block Comment
+
+```text
+Shift + Alt + A
+```
+
+### Example
+
+```yaml
+# replicas: 3
+```
+
+Useful during troubleshooting.
+
+---
+
+# 7. Code Formatting
+
+## Format Document
+
+```text
+Shift + Alt + F
+```
+
+### Important For
+
+* YAML
+* Terraform
+* JSON
+* Python
+
+Bad formatting causes deployment failures.
+
+Always format before commit.
+
+---
+
+# 8. Terminal Shortcuts
+
+## Open Terminal
+
+```text
+Ctrl + `
+```
+
+## New Terminal
+
+```text
+Ctrl + Shift + `
+```
+
+## Switch Terminal
+
+```text
+Ctrl + PageUp/PageDown
+```
+
+### Example Workflow
+
+Terminal 1
+
+```bash
+kubectl get pods
+```
+
+Terminal 2
+
+```bash
+terraform plan
+```
+
+Terminal 3
+
+```bash
+docker build .
+```
+
+---
+
+# 9. Code Navigation
+
+## Go to Definition
+
+```text
+F12
+```
+
+## Peek Definition
+
+```text
+Alt + F12
+```
+
+## Go Back
+
+```text
+Alt + Left
+```
+
+## Go Forward
+
+```text
+Alt + Right
+```
+
+Useful when reading large projects.
+
+---
+
+# 10. Rename Variable Everywhere
+
+## Rename Symbol
+
+```text
+F2
+```
+
+### Example
+
+Change
+
+```python
+cluster_name
+```
+
+to
+
+```python
+prod_cluster_name
+```
+
+everywhere safely.
+
+---
+
+# 11. Command Palette (Master Shortcut)
+
+## Open Command Palette
+
+```text
+Ctrl + Shift + P
+```
+
+You can do almost anything from here:
+
+* Git commands
+* Kubernetes extensions
+* Terraform commands
+* Format document
+* Restart language server
+
+Think of this as VS Code's "Google Search".
+
+---
+
+# 12. Split Editor
+
+## Split Screen
+
+```text
+Ctrl + \
+```
+
+### DevOps Usage
+
+Left Side:
+
+```yaml
+deployment.yaml
+```
+
+Right Side:
+
+```yaml
+service.yaml
+```
+
+Very useful for comparing files.
+
+---
+
+# 13. Git Productivity Shortcuts
+
+## Open Source Control
+
+```text
+Ctrl + Shift + G
+```
+
+## View Changes
+
+Click file in Source Control.
+
+### Daily Git Flow
+
+```bash
+git pull
+git checkout -b feature/new-feature
+git add .
+git commit -m "added deployment"
+git push
+```
+
+Use VS Code Git UI whenever possible.
+
+---
+
+# 14. Essential DevOps Extensions
+
+Install these immediately.
+
+### YAML
+
+Provides:
+
+* YAML validation
+* Auto completion
+
+### Terraform
+
+Provides:
+
+* Terraform syntax
+* Formatting
+
+### Docker
+
+Provides:
+
+* Dockerfile support
+* Container management
+
+### Kubernetes
+
+Provides:
+
+* YAML validation
+* Cluster interaction
+
+### GitLens
+
+Provides:
+
+* Git history
+* Author tracking
+
+### Error Lens
+
+Shows errors directly in editor.
+
+### Remote SSH
+
+Allows editing files on Linux servers.
+
+---
+
+# 15. Daily DevOps Workflow
+
+## Morning
+
+```bash
+git pull
+```
+
+Open project:
+
+```text
+Ctrl + P
+```
+
+---
+
+## Development
+
+Search resources:
+
+```text
+Ctrl + Shift + F
+```
+
+Format:
+
+```text
+Shift + Alt + F
+```
+
+Duplicate blocks:
+
+```text
+Shift + Alt + Down
+```
+
+---
+
+## Testing
+
+Open terminal:
+
+```text
+Ctrl + `
+```
+
+Run:
+
+```bash
+terraform validate
+kubectl apply --dry-run=client
+docker build .
+```
+
+---
+
+## Before Commit
+
+Format all files.
+
+Check Git:
+
+```text
+Ctrl + Shift + G
+```
+
+Commit changes.
+
+---
+
+# 16. Top 10 Shortcuts to Memorize First
+
+1. Ctrl + P → Open File
+2. Ctrl + Shift + P → Command Palette
+3. Ctrl + Shift + F → Search Project
+4. Ctrl + D → Multi Select
+5. Shift + Alt + F → Format Code
+6. Ctrl + ` → Terminal
+7. Ctrl + / → Comment
+8. F2 → Rename
+9. F12 → Go To Definition
+10. Ctrl + Shift + G → Git
+
+Master these 10 shortcuts first. They will give you 80% of the productivity improvement.
+
+---
+
+# Fresher Roadmap
+
+Week 1
+
+* Learn Ctrl + P
+* Learn Ctrl + Shift + P
+* Learn Terminal
+
+Week 2
+
+* Learn Search and Replace
+* Learn Multi Cursor
+
+Week 3
+
+* Learn Git Integration
+
+Week 4
+
+* Learn Extensions
+* Learn Remote SSH
+
+After one month, your VS Code productivity will be significantly better than most beginners.
