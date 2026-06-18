@@ -1,0 +1,289 @@
+Kubernetes Cluster Creation Using kOps on AWS
+Complete Step-by-Step Handbook
+Objective
+This guide explains how to create a production-style Kubernetes cluster on AWS using kOps. By the end of this exercise, you will:
+	Create a Kubernetes cluster using kOps
+	Provision 1 Control Plane and 2 Worker Nodes
+	Validate cluster health
+	Deploy workloads
+	Schedule Pods to a specific node
+	Understand Node Affinity and Anti-Affinity concepts
+	Safely destroy the cluster to avoid AWS charges
+
+1. What is kOps?
+kOps (Kubernetes Operations) is an open-source tool used to deploy, manage, upgrade, and maintain production-grade Kubernetes clusters on AWS.
+kOps automates the creation of:
+	VPC
+	Subnets
+	Security Groups
+	EC2 Instances
+	Auto Scaling Groups
+	IAM Roles
+	Route Tables
+	Kubernetes Control Plane
+	Worker Nodes
+Think of kOps as Terraform specifically designed for Kubernetes.
+
+2. Architecture
+Cluster Name:
+test.k8s.local
+Region:
+us-east-1
+Architecture:
+Internet
+|
+AWS VPC
+|
++———————+
+| Control Plane Node |
++———————+
+|
++———————+
+| Worker Node 1 |
++———————+
+|
++———————+
+| Worker Node 2 |
++———————+
+
+3. Prerequisites
+AWS Requirements
+AWS Account
+Ensure an AWS account is available with billing enabled.
+IAM User
+Required Permissions:
+	AmazonEC2FullAccess
+	AmazonS3FullAccess
+	IAMFullAccess
+	AmazonVPCFullAccess
+	AmazonRoute53FullAccess (Optional)
+	AmazonEKSClusterPolicy (Optional)
+Verify:
+aws sts get-caller-identity
+
+EC2 Management Machine
+Recommended:
+	Ubuntu 22.04
+	t3.medium
+Verify:
+uname -a
+
+AWS CLI
+Verify:
+aws --version
+Configure:
+aws configure
+Test:
+aws sts get-caller-identity
+
+kubectl
+Verify:
+kubectl version --client
+
+kOps
+Install:
+curl -Lo kops https://github.com/kubernetes/kops/releases/latest/download/kops-linux-amd64
+
+chmod +x kops
+
+sudo mv kops /usr/local/bin/
+Verify:
+kops version
+
+SSH Key
+Generate:
+ssh-keygen -t ed25519 -f ~/.ssh/kops-key
+Verify:
+ls ~/.ssh/
+Expected:
+kops-key
+kops-key.pub
+
+4. Create S3 State Store
+kOps stores cluster configuration inside S3.
+Create Bucket:
+export AWS_REGION=us-east-1
+
+aws s3api create-bucket \
+--bucket test-kops-state-2026 \
+--region us-east-1
+Enable Versioning:
+aws s3api put-bucket-versioning \
+--bucket test-kops-state-2026 \
+--versioning-configuration Status=Enabled
+#Before Deleting S3 : stop versioning and Empty the bucket.
+Export Variable:
+export KOPS_STATE_STORE=s3://test-kops-state-2026
+Verify:
+echo $KOPS_STATE_STORE
+
+5. Create Cluster
+Cluster Name:
+export CLUSTER_NAME=test.k8s.local
+Availability Zone:
+export ZONE=us-east-1a
+Create Cluster:
+kops create cluster \
+--name ${CLUSTER_NAME} \
+--state ${KOPS_STATE_STORE} \
+--zones ${ZONE} \
+--node-count 2 \
+--control-plane-count 1 \
+--node-size t3.medium \
+--control-plane-size t3.medium \
+--networking calico \
+--ssh-public-key ~/.ssh/kops-key.pub \
+--yes
+
+6. Validate Cluster
+Wait approximately 5-10 minutes.
+Validate:
+kops validate cluster \
+--name ${CLUSTER_NAME}
+Expected:
+Your cluster is ready
+
+7. Verify Nodes
+Check Nodes:
+kubectl get nodes -o wide
+Expected:
+NAME               STATUS
+master-node        Ready
+worker-node-1      Ready
+worker-node-2      Ready
+
+8. Deploy First Pod
+Create:
+pod.yaml
+apiVersion: v1
+kind: Pod
+
+metadata:
+  name: nginx
+
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+Deploy:
+kubectl apply -f pod.yaml
+Verify:
+kubectl get pods -o wide
+
+9. Schedule Pod to a Specific Node
+Step 1: View Nodes
+kubectl get nodes
+Example:
+worker1
+worker2
+
+Step 2: Label Target Node
+kubectl label node worker1 dedicated=frontend
+Verify:
+kubectl get nodes --show-labels
+
+Step 3: Deploy Pod Using Node Selector
+apiVersion: v1
+kind: Pod
+
+metadata:
+  name: nginx-specific
+
+spec:
+
+  nodeSelector:
+    dedicated: frontend
+
+  containers:
+  - name: nginx
+    image: nginx
+Apply:
+kubectl apply -f nginx-specific.yaml
+Verify:
+kubectl get pod nginx-specific -o wide
+Expected:
+NODE
+worker1
+
+10. Node Affinity
+Production Preferred Method.
+Example:
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: dedicated
+          operator: In
+          values:
+          - frontend
+Benefits:
+	Flexible
+	Scalable
+	Production Ready
+
+11. Pod Anti-Affinity
+Goal:
+Do not place application replicas on the same node.
+Example:
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+    - labelSelector:
+        matchExpressions:
+        - key: app
+          operator: In
+          values:
+          - nginx
+      topologyKey: kubernetes.io/hostname
+Result:
+Replica 1 -> Worker 1
+Replica 2 -> Worker 2
+Improves:
+	High Availability
+	Fault Tolerance
+	Disaster Recovery
+
+12. Troubleshooting Commands
+Check Cluster:
+kops validate cluster
+Check Nodes:
+kubectl get nodes
+Describe Node:
+kubectl describe node <node-name>
+Check Pods:
+kubectl get pods -A
+Describe Pod:
+kubectl describe pod <pod-name>
+View Logs:
+kubectl logs <pod-name>
+
+13. Cluster Cleanup
+IMPORTANT
+Always delete the cluster after practice.
+Delete:
+kops delete cluster \
+--name ${CLUSTER_NAME} \
+--state ${KOPS_STATE_STORE} \
+--yes
+Verify EC2 Instances Removed:
+aws ec2 describe-instances
+Delete S3 Bucket:
+aws s3 rb s3://test-kops-state-2026 --force
+
+Interview Questions
+What is kOps?
+kOps is an open-source Kubernetes lifecycle management tool that automates the creation, upgrade, and maintenance of Kubernetes clusters on AWS.
+Why is an S3 bucket required?
+The S3 bucket acts as the kOps State Store where cluster configurations and metadata are stored.
+Difference Between Node Selector and Node Affinity?
+Node Selector:
+	Simple
+	Exact match
+Node Affinity:
+	Advanced scheduling
+	Supports expressions and preferences
+What is Pod Anti-Affinity?
+Pod Anti-Affinity prevents multiple replicas from running on the same node, improving application availability during node failures.
+Why use kOps instead of kubeadm?
+kOps automatically provisions AWS infrastructure and manages the entire cluster lifecycle, while kubeadm only bootstraps Kubernetes on existing servers.
